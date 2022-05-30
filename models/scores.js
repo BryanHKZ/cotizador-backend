@@ -22,7 +22,7 @@ module.exports = function (sequelize, DataTypes) {
         },
       },
       score: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: true,
       },
     },

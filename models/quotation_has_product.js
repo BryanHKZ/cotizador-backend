@@ -12,12 +12,12 @@ module.exports = function (sequelize, DataTypes) {
           key: "id",
         },
       },
-      product_id: {
+      shop_has_product_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         references: {
-          model: "product",
+          model: "shop_has_product",
           key: "id",
         },
       },
@@ -28,14 +28,14 @@ module.exports = function (sequelize, DataTypes) {
       timestamps: true,
       indexes: [
         {
-          name: "fk_quotation_has_product_product1_idx",
-          using: "BTREE",
-          fields: [{ name: "product_id" }],
-        },
-        {
           name: "fk_quotation_has_product_quotation1_idx",
           using: "BTREE",
           fields: [{ name: "quotation_id" }],
+        },
+        {
+          name: "fk_quotation_has_product_shop_has_product1_idx",
+          using: "BTREE",
+          fields: [{ name: "shop_has_product_id" }],
         },
       ],
     }

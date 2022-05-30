@@ -3,7 +3,11 @@ const jwt = require("jsonwebtoken");
 
 module.exports.createToken = (data) => {
   const payload = {
-    sub: data.id,
+    user: {
+      id: data.id,
+      name: `${data.firstName} ${data.lastName}`,
+      role: data.role,
+    },
     iat: moment().unix(),
     exp: moment().add(1, "week").unix(),
   };

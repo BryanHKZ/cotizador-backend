@@ -3,10 +3,15 @@ module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
     "shop_has_product",
     {
-      shop_id: {
+      id: {
+        autoIncrement: true,
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
+      },
+      shop_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
         references: {
           model: "shop",
           key: "id",
@@ -15,7 +20,6 @@ module.exports = function (sequelize, DataTypes) {
       product_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true,
         references: {
           model: "product",
           key: "id",

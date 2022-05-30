@@ -4,6 +4,7 @@ module.exports = function (sequelize, DataTypes) {
     "notification",
     {
       id: {
+        autoIncrement: true,
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,

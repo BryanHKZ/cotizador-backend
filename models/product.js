@@ -13,10 +13,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(60),
         allowNull: false,
       },
-      price: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
       description: {
         type: DataTypes.STRING(60),
         allowNull: true,
@@ -28,10 +24,6 @@ module.exports = function (sequelize, DataTypes) {
           model: "category",
           key: "id",
         },
-      },
-      tags: {
-        type: DataTypes.TEXT,
-        allowNull: true,
       },
     },
     {

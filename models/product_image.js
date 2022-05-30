@@ -15,12 +15,24 @@ module.exports = function (sequelize, DataTypes) {
           key: "id",
         },
       },
+      id: {
+        autoIncrement: true,
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+      },
     },
     {
       sequelize,
       tableName: "product_image",
       timestamps: true,
-      indexes: [],
+      indexes: [
+        {
+          name: "fk_product_image_product1_idx",
+          using: "BTREE",
+          fields: [{ name: "product_id" }],
+        },
+      ],
     }
   );
 };
