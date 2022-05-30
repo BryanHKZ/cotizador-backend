@@ -20,11 +20,11 @@ module.exports.getShopProducts = (shopId) => {
   });
 };
 
-module.exports.getOtherProductPrices = (productId) => {
+module.exports.getOtherProductPrices = (searchTerms) => {
   return new Promise(async (resolve, reject) => {
     try {
       const otherPrices = await sequelize.query(
-        `SELECT shop.name, shop.logo, shop.id, shop_has_product.price FROM shop_has_product JOIN shop ON shop.id = shop_has_product.shop_id WHERE shop_has_product.product_id = ${productId}`,
+        `SELECT shop.name, shop.logo, shop.id, shop_has_product.price FROM shop_has_product JOIN shop ON shop.id = shop_has_product.shop_id JOIN product ON product.id = shop_has_product.product_id WHERE product.name ILIKE '%${searchTerms}%'`,
         { type: sequelize.QueryTypes.SELECT }
       );
 

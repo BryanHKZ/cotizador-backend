@@ -26,6 +26,8 @@ api.post(
     check("category_id", "El producto requiere alguna categoría.").isInt({
       min: 0,
     }),
+    check("shop_id", "El producto debe pertenecer a una tienda."),
+    check("price", "El precio es requerido.").isInt({ min: 10000 }),
   ],
   createProduct
 );

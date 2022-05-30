@@ -97,3 +97,48 @@ module.exports.deleteShop = async (req, res) => {
     res.status(500).json({ msg: "Ha ocurrido un error." });
   }
 };
+
+module.exports.deleteShopProduct = async (req, res) => {
+  const { shop_id, product_id } = req.params;
+  try {
+    const validUser = await _Shop.findOne({ where: { id: shop_id } });
+
+    if (validUser.user_id !== req.user.id) {
+      return res.status(403).json({ msg: "No puedes realizar esta acción." });
+    }
+
+    await _ShopHasProduct.destroy({ where: { product_id } });
+
+    return res.status(202).json({ msg: "Producto eliminado de la tienda." });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error." });
+  }
+};
+
+module.exports.addProductShop = async (req, res) => {
+  const { shop_id, product_id, price } = req.body;
+  try {
+    const validUser = await _Shop.findOne({ where: { id: shop_id } });
+
+    if (validUser.user_id !== req.user.id) {
+      return res.status(403).json({ msg: "No puedes realizar esta acción." });
+    }
+
+    const exist = await _ShopHasProduct.findOne({
+      where: { shop_id, product_id },
+    });
+
+    if (exist)
+      return res
+        .status(409)
+        .json({ msg: "Este producto ya se encuentra agregado en la tienda." });
+
+    await _ShopHasProduct.create({ shop_id, product_id, price });
+
+    return res.status(202).json({ msg: "Producto agregado a la tienda." });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error." });
+  }
+};

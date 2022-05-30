@@ -6,6 +6,7 @@ const {
   category: _Category,
   scores: _Score,
   shop_has_product: _ShopHasProduct,
+  shop: _Shop,
 } = require("../../../models");
 
 const { validationResult } = require("express-validator");
@@ -23,7 +24,7 @@ module.exports.getProduct = async (req, res) => {
     if (!existProduct)
       return res.status(404).json({ msg: "Producto no encontrado." });
 
-    const prices = await getOtherProductPrices(existProduct.id);
+    const prices = await getOtherProductPrices(existProduct.name);
     const tags = await getProductTags(existProduct.id);
     const category = await _Category.findOne({
       where: { id: existProduct.category_id },
@@ -46,20 +47,39 @@ module.exports.getProduct = async (req, res) => {
 };
 
 module.exports.createProduct = async (req, res) => {
+  // if (req.user.role !== "ADMIN")
+  //   return res.status(401).json({ msg: "No puedes realizar esta acción." });
+
   const errores = validationResult(req);
   if (!errores.isEmpty()) {
     return res.status(400).json({ errores: errores.array() });
   }
 
-  const { name, description, tags, photos, category_id } = req.body;
-
-  const existCategory = await _Category.findOne({ where: { id: category_id } });
-
-  if (!existCategory)
-    return res.status(400).json({ msg: "La categoría no es válida." });
-
+  const { name, description, tags, photos, category_id, shop_id, price } =
+    req.body;
   try {
+    const existShop = await _Shop.findOne({ where: { id: shop_id } });
+
+    if (!existShop)
+      return res.status(404).json({ msg: "Tienda no encontrada." });
+
+    if (existShop.user_id !== req.user.id)
+      return res.status(401).json({ msg: "No puedes realizar esta acción." });
+
+    const existCategory = await _Category.findOne({
+      where: { id: category_id },
+    });
+
+    if (!existCategory)
+      return res.status(400).json({ msg: "La categoría no es válida." });
+
     const product = await _Product.create({ name, description, category_id });
+
+    await _ShopHasProduct.create({
+      shop_id: existShop.id,
+      price,
+      product_id: product.id,
+    });
 
     tags.forEach(async (t) => {
       let exist = await _Tag.findOne({ where: { id: t } });
