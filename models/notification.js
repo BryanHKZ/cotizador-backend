@@ -8,10 +8,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
-      type: {
-        type: DataTypes.STRING(45),
-        allowNull: true,
-      },
       content: {
         type: DataTypes.STRING(80),
         allowNull: false,
@@ -23,6 +19,15 @@ module.exports = function (sequelize, DataTypes) {
           model: "user",
           key: "id",
         },
+      },
+      data: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      viewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
     },
     {

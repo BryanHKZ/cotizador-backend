@@ -21,13 +21,17 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(60),
         allowNull: true,
       },
-      shop_id: {
+      category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "shop",
+          model: "category",
           key: "id",
         },
+      },
+      tags: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
     },
     {
@@ -36,9 +40,9 @@ module.exports = function (sequelize, DataTypes) {
       timestamps: true,
       indexes: [
         {
-          name: "fk_product_shop1_idx",
+          name: "fk_product_category1_idx",
           using: "BTREE",
-          fields: [{ name: "shop_id" }],
+          fields: [{ name: "category_id" }],
         },
       ],
     }

@@ -9,14 +9,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
-      capitalPrice: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      quotationPrice: {
-        type: DataTypes.STRING(45),
-        allowNull: true,
-      },
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -24,6 +16,16 @@ module.exports = function (sequelize, DataTypes) {
           model: "user",
           key: "id",
         },
+      },
+      name: {
+        type: DataTypes.STRING(45),
+        allowNull: true,
+        defaultValue: "Cotización",
+      },
+      description: {
+        type: DataTypes.STRING(140),
+        allowNull: true,
+        defaultValue: "Sin Descripción",
       },
     },
     {
