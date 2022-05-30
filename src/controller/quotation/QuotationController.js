@@ -24,6 +24,27 @@ module.exports.getQuotation = async (req, res) => {
   } catch (error) {}
 };
 
+module.exports.getQuotationByUser = async (req, res) => {
+  const { user_id } = req.params;
+
+  try {
+    const userQuotations = await _Quotation.findAll({ where: { user_id } });
+
+    const data = [];
+    for (let i = 0; i < userQuotations.length; i++) {
+      data.push({
+        ...userQuotations[i].dataValues,
+        products: await getQuotationProducts(userQuotations[i].id),
+      });
+    }
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error." });
+  }
+};
+
 module.exports.createQuotation = async (req, res) => {
   const { products, name, description } = req.body;
 

@@ -8,9 +8,12 @@ const {
   addQuotationProduct,
   deleteQuotation,
   deleteQuotationProduct,
+  getQuotationByUser,
 } = require("../controller/quotation/QuotationController");
 
 api.get("/:id", [], getQuotation);
+
+api.get("/all/:user_id", [], getQuotationByUser);
 
 api.post(
   "/",
