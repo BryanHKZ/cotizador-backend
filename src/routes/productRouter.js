@@ -6,6 +6,7 @@ const {
   createProduct,
   getProduct,
   deleteProduct,
+  qualifyProduct,
 } = require("../controller/product/ProductController");
 
 api.get("/:id", [], getProduct);
@@ -33,5 +34,15 @@ api.post(
 );
 
 api.delete("/:id", auth, [], deleteProduct);
+
+api.put(
+  "/qualify",
+  auth,
+  [
+    check("product_id", "la ID del producto es requerida"),
+    check("score", "Se requiere una calificación."),
+  ],
+  qualifyProduct
+);
 
 module.exports = api;

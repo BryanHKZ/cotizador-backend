@@ -9,6 +9,7 @@ const {
   deleteQuotation,
   deleteQuotationProduct,
   getQuotationByUser,
+  likeQuotation,
 } = require("../controller/quotation/QuotationController");
 
 api.get("/:id", [], getQuotation);
@@ -44,5 +45,7 @@ api.put(
   [],
   deleteQuotationProduct
 );
+
+api.put("/like/:id", auth, [], likeQuotation);
 
 module.exports = api;

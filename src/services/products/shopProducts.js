@@ -24,7 +24,7 @@ module.exports.getOtherProductPrices = (searchTerms) => {
   return new Promise(async (resolve, reject) => {
     try {
       const otherPrices = await sequelize.query(
-        `SELECT shop.name, shop.logo, shop.id, shop_has_product.price FROM shop_has_product JOIN shop ON shop.id = shop_has_product.shop_id JOIN product ON product.id = shop_has_product.product_id WHERE product.name ILIKE '%${searchTerms}%'`,
+        `SELECT shop.name, shop.logo, shop.id, shop_has_product.price, shop_has_product.id AS "shopProductId" FROM shop_has_product JOIN shop ON shop.id = shop_has_product.shop_id JOIN product ON product.id = shop_has_product.product_id WHERE product.name ILIKE '%${searchTerms}%'`,
         { type: sequelize.QueryTypes.SELECT }
       );
 
@@ -55,10 +55,10 @@ module.exports.getProductScore = (productId) => {
     try {
       const scores = await _Score.findAll({ where: { product_id: productId } });
 
-      let data = scores.reduce((acc, cur) => acc.score + cur.score, 0);
+      let data = scores.reduce((acc, cur) => acc + cur.score, 0);
 
       resolve({
-        score: data / scores.length === 0 ? 1 : scores.length,
+        score: data / (scores.length === 0 ? 1 : scores.length),
         califications: scores.length,
       });
     } catch (error) {

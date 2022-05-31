@@ -47,9 +47,6 @@ module.exports.getProduct = async (req, res) => {
 };
 
 module.exports.createProduct = async (req, res) => {
-  // if (req.user.role !== "ADMIN")
-  //   return res.status(401).json({ msg: "No puedes realizar esta acción." });
-
   const errores = validationResult(req);
   if (!errores.isEmpty()) {
     return res.status(400).json({ errores: errores.array() });
@@ -118,9 +115,38 @@ module.exports.deleteProduct = async (req, res) => {
 
     await existProduct.destroy();
 
-    return res.status(202).json({ msg: "Producto eliminado correctamente." });
+    return res.status(200).json({ msg: "Producto eliminado correctamente." });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Ha ocurrido un error." });
+  }
+};
+
+module.exports.qualifyProduct = async (req, res) => {
+  const user_id = req.user.id,
+    { product_id, score } = req.body;
+
+  try {
+    const existProduct = await _Product.findOne({
+      where: { id: product_id },
+    });
+
+    if (!existProduct)
+      return res.status(404).json({ msg: "No se ha encontrado el producto." });
+
+    const existQualification = await _Score.findOne({
+      where: { user_id, product_id },
+    });
+
+    if (existQualification) {
+      await existVotation.update({ product_id });
+    } else {
+      await _Score.create({ user_id, product_id, score });
+    }
+
+    return res.status(200).json({ status: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error", status: false });
   }
 };

@@ -3,9 +3,11 @@ const {
   shop_has_product: _ShopHasProduct,
   quotation_has_product: _QuotationHasProduct,
   user: _User,
+  quotation_likes: _QuotationLikes,
 } = require("../../../models");
 const {
   getQuotationProducts,
+  getQuotationLikes,
 } = require("../../services/products/quotationProducts");
 
 module.exports.getQuotation = async (req, res) => {
@@ -19,8 +21,9 @@ module.exports.getQuotation = async (req, res) => {
 
     const user = await _User.findOne({ where: { id: data.user_id } });
     const products = await getQuotationProducts(data.id);
+    const likes = await getQuotationLikes(data.id);
 
-    return res.status(200).json({ ...data.dataValues, user, products });
+    return res.status(200).json({ ...data.dataValues, user, products, likes });
   } catch (error) {}
 };
 
@@ -99,7 +102,7 @@ module.exports.addQuotationProduct = async (req, res) => {
       });
     }
 
-    return res.status(202).json({ msg: "Agregado correctamente." });
+    return res.status(200).json({ msg: "Agregado correctamente." });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Ha ocurrido un error." });
@@ -131,7 +134,7 @@ module.exports.deleteQuotationProduct = async (req, res) => {
       });
     }
 
-    return res.status(202).json({ msg: "Eliminado correctamente." });
+    return res.status(200).json({ msg: "Eliminado correctamente." });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Ha ocurrido un error." });
@@ -155,5 +158,36 @@ module.exports.deleteQuotation = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Ha ocurrido un error" });
+  }
+};
+
+module.exports.likeQuotation = async (req, res) => {
+  const user_id = req.user.id,
+    quotation_id = req.params.id;
+
+  try {
+    const existQuotation = await _Quotation.findOne({
+      where: { id: quotation_id },
+    });
+
+    if (!existQuotation)
+      return res
+        .status(404)
+        .json({ msg: "No se ha encontrado la cotización." });
+
+    const existVotation = await _QuotationLikes.findOne({
+      where: { user_id, quotation_id },
+    });
+
+    if (existVotation) {
+      await existVotation.destroy();
+    } else {
+      await _QuotationLikes.create({ user_id, quotation_id });
+    }
+
+    return res.status(200).json({ status: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error", status: false });
   }
 };

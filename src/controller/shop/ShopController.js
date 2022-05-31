@@ -71,7 +71,7 @@ module.exports.updateShop = async (req, res) => {
   try {
     await _Shop.update(updateObj, { where: { id: idToUpdate } });
 
-    return res.status(202).json({ msg: "Tienda actualizada correctamente." });
+    return res.status(200).json({ msg: "Tienda actualizada correctamente." });
   } catch (error) {
     console.log("========== ERROR UPDATE_SHOP ->", error);
     res.status(500).json({ msg: "Ha ocurrido un error." });
@@ -91,7 +91,7 @@ module.exports.deleteShop = async (req, res) => {
     await _ShopHasProduct.destroy({ where: { shop_id: idToUpdate } });
     await _Shop.destroy({ where: { id: idToUpdate } });
 
-    return res.status(202).json({ msg: "Tienda eliminada correctamente." });
+    return res.status(200).json({ msg: "Tienda eliminada correctamente." });
   } catch (error) {
     console.log("========== ERROR DELETE_SHOP ->", error);
     res.status(500).json({ msg: "Ha ocurrido un error." });
@@ -109,7 +109,7 @@ module.exports.deleteShopProduct = async (req, res) => {
 
     await _ShopHasProduct.destroy({ where: { product_id } });
 
-    return res.status(202).json({ msg: "Producto eliminado de la tienda." });
+    return res.status(200).json({ msg: "Producto eliminado de la tienda." });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Ha ocurrido un error." });
@@ -136,7 +136,7 @@ module.exports.addProductShop = async (req, res) => {
 
     await _ShopHasProduct.create({ shop_id, product_id, price });
 
-    return res.status(202).json({ msg: "Producto agregado a la tienda." });
+    return res.status(200).json({ msg: "Producto agregado a la tienda." });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Ha ocurrido un error." });
