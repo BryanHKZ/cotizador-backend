@@ -121,7 +121,7 @@ module.exports.qualifyProduct = async (req, res) => {
     });
 
     if (existQualification) {
-      await existQualification.update({ product_id });
+      await existQualification.update({ score });
     } else {
       await _Score.create({ user_id, product_id, score });
     }
