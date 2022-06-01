@@ -22,16 +22,7 @@ api.get("/all/:user_id", [], getQuotationByUser);
 
 api.get("/most/famous", [], mostLiked);
 
-api.post(
-  "/",
-  auth,
-  [
-    check("products", "Se requiere una lista de productos.").isArray({
-      min: 1,
-    }),
-  ],
-  createQuotation
-);
+api.post("/", auth, [], createQuotation);
 
 api.put(
   "/add/product",
