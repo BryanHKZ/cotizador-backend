@@ -72,7 +72,7 @@ module.exports.createQuotation = async (req, res) => {
       user_id: req.user.id,
     });
 
-    products.forEach(async (element) => {
+    products?.forEach(async (element) => {
       const existItem = await _ShopHasProduct.findOne({
         where: { id: element },
       });
@@ -84,7 +84,10 @@ module.exports.createQuotation = async (req, res) => {
       }
     });
 
-    const list = await getQuotationProducts(newQuota.id);
+    let list = [];
+    if (products?.length !== 0) {
+      list = await getQuotationProducts(newQuota.id);
+    }
 
     return res.status(201).json({ ...newQuota.dataValues, products: list });
   } catch (error) {
