@@ -45,6 +45,23 @@ module.exports.getQuotationByUser = async (req, res) => {
   }
 };
 
+module.exports.getAllQuotations = async (req, res) => {
+  try {
+    const allQuota = await _Quotation.findAll();
+
+    const data = [];
+    for (let i = 0; i < allQuota.length; i++) {
+      let info = await getQuotationData(allQuota[i].id);
+      data.push(info);
+    }
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error." });
+  }
+};
+
 module.exports.createQuotation = async (req, res) => {
   const { products, name, description } = req.body;
 

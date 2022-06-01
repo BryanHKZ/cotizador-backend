@@ -11,9 +11,12 @@ const {
   getQuotationByUser,
   likeQuotation,
   mostLiked,
+  getAllQuotations,
 } = require("../controller/quotation/QuotationController");
 
 api.get("/:id", [], getQuotation);
+
+api.get("/", [], getAllQuotations);
 
 api.get("/all/:user_id", [], getQuotationByUser);
 
