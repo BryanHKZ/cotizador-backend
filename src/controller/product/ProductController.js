@@ -11,39 +11,21 @@ const {
 
 const { validationResult } = require("express-validator");
 const {
-  getOtherProductPrices,
-  getProductTags,
-  getProductScore,
+  getProductData,
+  getBestQualification,
 } = require("../../services/products/shopProducts");
 
 module.exports.getProduct = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const existProduct = await _Product.findOne({ where: { id } });
-    if (!existProduct)
-      return res.status(404).json({ msg: "Producto no encontrado." });
+    const data = await getProductData(id, req, res);
 
-    const prices = await getOtherProductPrices(existProduct.name);
-    const tags = await getProductTags(existProduct.id);
-    const category = await _Category.findOne({
-      where: { id: existProduct.category_id },
-    });
-    const photos = await _ProductImage.findAll({
-      where: { product_id: existProduct.id },
-    });
-
-    const score = await getProductScore(existProduct.id);
-
-    return res.status(200).json({
-      ...existProduct.dataValues,
-      score,
-      tags,
-      category: { id: category.id, name: category.name },
-      prices,
-      photos: photos.map((e) => e.image),
-    });
-  } catch (error) {}
+    res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error." });
+  }
 };
 
 module.exports.createProduct = async (req, res) => {
@@ -148,5 +130,23 @@ module.exports.qualifyProduct = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Ha ocurrido un error", status: false });
+  }
+};
+
+module.exports.bestQualificationProduct = async (req, res) => {
+  try {
+    const bqp = await getBestQualification();
+
+    const arrData = [];
+    for (let i = 0; i < bqp.length; i++) {
+      const element = bqp[i];
+
+      arrData.push(await getProductData(element.id));
+    }
+
+    res.status(200).json(arrData);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error" });
   }
 };

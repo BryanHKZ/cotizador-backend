@@ -7,24 +7,21 @@ const {
 } = require("../../../models");
 const {
   getQuotationProducts,
-  getQuotationLikes,
+  getQuotationData,
+  getMostLikedQuotations,
 } = require("../../services/products/quotationProducts");
 
 module.exports.getQuotation = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const data = await _Quotation.findOne({ where: { id } });
+    const data = await getQuotationData(id);
 
-    if (!data)
-      return res.status(404).json({ msg: "Cotización no encontrada." });
-
-    const user = await _User.findOne({ where: { id: data.user_id } });
-    const products = await getQuotationProducts(data.id);
-    const likes = await getQuotationLikes(data.id);
-
-    return res.status(200).json({ ...data.dataValues, user, products, likes });
-  } catch (error) {}
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error." });
+  }
 };
 
 module.exports.getQuotationByUser = async (req, res) => {
@@ -189,5 +186,24 @@ module.exports.likeQuotation = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Ha ocurrido un error", status: false });
+  }
+};
+
+module.exports.mostLiked = async (req, res) => {
+  try {
+    const mlq = await getMostLikedQuotations();
+
+    const arrData = [];
+
+    for (let i = 0; i < mlq.length; i++) {
+      const element = mlq[i];
+
+      arrData.push(await getQuotationData(element.id));
+    }
+
+    res.status(200).json(arrData);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error" });
   }
 };

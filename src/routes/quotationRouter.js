@@ -10,11 +10,14 @@ const {
   deleteQuotationProduct,
   getQuotationByUser,
   likeQuotation,
+  mostLiked,
 } = require("../controller/quotation/QuotationController");
 
 api.get("/:id", [], getQuotation);
 
 api.get("/all/:user_id", [], getQuotationByUser);
+
+api.get("/most/famous", [], mostLiked);
 
 api.post(
   "/",

@@ -7,9 +7,12 @@ const {
   getProduct,
   deleteProduct,
   qualifyProduct,
+  bestQualificationProduct,
 } = require("../controller/product/ProductController");
 
 api.get("/:id", [], getProduct);
+
+api.get("/best/qualification", [], bestQualificationProduct);
 
 api.post(
   "/create",

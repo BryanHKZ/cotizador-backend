@@ -1,6 +1,25 @@
-const { sequelize } = require("../../../models");
+const {
+  quotation: _Quotation,
+  user: _User,
+  sequelize,
+} = require("../../../models");
 
-module.exports.getQuotationProducts = (quotation_id) => {
+const getMostLikedQuotations = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await sequelize.query(
+        `select quotation.id, count(quotation_likes.quotation_id) from quotation join quotation_likes on quotation_likes.quotation_id = quotation.id group by quotation.id order by count(quotation_likes.quotation_id) desc`,
+        { type: sequelize.QueryTypes.SELECT }
+      );
+
+      resolve(data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const getQuotationProducts = (quotation_id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const products = await sequelize.query(
@@ -15,7 +34,7 @@ module.exports.getQuotationProducts = (quotation_id) => {
   });
 };
 
-module.exports.getQuotationLikes = (quotation_id) => {
+const getQuotationLikes = (quotation_id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const likes = await sequelize.query(
@@ -28,4 +47,23 @@ module.exports.getQuotationLikes = (quotation_id) => {
       reject(error);
     }
   });
+};
+
+async function getQuotationData(id) {
+  const data = await _Quotation.findOne({ where: { id } });
+
+  if (!data) throw new Error({ msg: "Cotización no encontrada.", status: 404 });
+
+  const user = await _User.findOne({ where: { id: data.user_id } });
+  const products = await getQuotationProducts(data.id);
+  const likes = await getQuotationLikes(data.id);
+
+  return { ...data.dataValues, user, products, likes };
+}
+
+module.exports = {
+  getQuotationProducts,
+  getQuotationLikes,
+  getQuotationData,
+  getMostLikedQuotations,
 };

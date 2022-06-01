@@ -2,10 +2,12 @@ const {
   shop_has_product: _ShopHasProduct,
   product: _Product,
   scores: _Score,
+  category: _Category,
+  product_image: _ProductImage,
   sequelize,
 } = require("../../../models");
 
-module.exports.getShopProducts = (shopId) => {
+const getShopProducts = (shopId) => {
   return new Promise(async (resolve, reject) => {
     try {
       const products = await sequelize.query(
@@ -20,7 +22,7 @@ module.exports.getShopProducts = (shopId) => {
   });
 };
 
-module.exports.getOtherProductPrices = (searchTerms) => {
+const getOtherProductPrices = (searchTerms) => {
   return new Promise(async (resolve, reject) => {
     try {
       const otherPrices = await sequelize.query(
@@ -35,7 +37,7 @@ module.exports.getOtherProductPrices = (searchTerms) => {
   });
 };
 
-module.exports.getProductTags = (productId) => {
+const getProductTags = (productId) => {
   return new Promise(async (resolve, reject) => {
     try {
       const tags = await sequelize.query(
@@ -50,7 +52,7 @@ module.exports.getProductTags = (productId) => {
   });
 };
 
-module.exports.getProductScore = (productId) => {
+const getProductScore = (productId) => {
   return new Promise(async (resolve, reject) => {
     try {
       const scores = await _Score.findAll({ where: { product_id: productId } });
@@ -65,4 +67,55 @@ module.exports.getProductScore = (productId) => {
       reject(error);
     }
   });
+};
+
+const getBestQualification = async () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await sequelize.query(
+        `select product.id, avg(scores.score) from scores join product on product.id = scores.product_id group by product.id order by avg(scores.score) desc`,
+        { type: sequelize.QueryTypes.SELECT }
+      );
+
+      resolve(data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+async function getProductData(id) {
+  try {
+    const existProduct = await _Product.findOne({ where: { id } });
+    if (!existProduct) throw new Error({ msg: "Producto no encontrado." });
+
+    const prices = await getOtherProductPrices(existProduct.name);
+    const tags = await getProductTags(existProduct.id);
+    const category = await _Category.findOne({
+      where: { id: existProduct.category_id },
+    });
+    const photos = await _ProductImage.findAll({
+      where: { product_id: existProduct.id },
+    });
+
+    const score = await getProductScore(existProduct.id);
+
+    return {
+      ...existProduct.dataValues,
+      score,
+      tags,
+      category: { id: category.id, name: category.name },
+      prices,
+      photos: photos.map((e) => e.image),
+    };
+  } catch (error) {}
+}
+
+module.exports = {
+  getShopProducts,
+  getOtherProductPrices,
+  getProductScore,
+  getProductTags,
+  getBestQualification,
+  getProductData,
 };
