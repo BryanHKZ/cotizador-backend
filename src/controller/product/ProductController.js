@@ -28,6 +28,24 @@ module.exports.getProduct = async (req, res) => {
   }
 };
 
+module.exports.getAllProducts = async (req, res) => {
+  try {
+    const bqp = await _Product.findAll();
+
+    const arrData = [];
+    for (let i = 0; i < bqp.length; i++) {
+      const element = bqp[i];
+
+      arrData.push(await getProductData(element.id));
+    }
+
+    res.status(200).json(arrData);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Ha ocurrido un error" });
+  }
+};
+
 module.exports.createProduct = async (req, res) => {
   const errores = validationResult(req);
   if (!errores.isEmpty()) {

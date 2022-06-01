@@ -8,11 +8,14 @@ const {
   deleteProduct,
   qualifyProduct,
   bestQualificationProduct,
+  getAllProducts,
 } = require("../controller/product/ProductController");
 
 api.get("/:id", [], getProduct);
 
 api.get("/best/qualification", [], bestQualificationProduct);
+
+api.get("/", [], getAllProducts);
 
 api.post(
   "/create",
