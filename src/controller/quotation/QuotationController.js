@@ -92,6 +92,17 @@ module.exports.addQuotationProduct = async (req, res) => {
     const existItem = await _ShopHasProduct.findOne({
       where: { id: shop_has_product_id },
     });
+
+    const existProductInList = await _QuotationHasProduct.findOne({
+      where: { quotation_id, shop_has_product_id },
+    });
+
+    if (existProductInList) {
+      return res
+        .status(400)
+        .json({ msg: "Ese producto ya se encuentra en la cotización." });
+    }
+
     if (existItem) {
       await _QuotationHasProduct.create({
         quotation_id: existQuotation.id,
@@ -120,9 +131,20 @@ module.exports.deleteQuotationProduct = async (req, res) => {
     if (existQuotation.user_id !== req.user.id)
       return res.status(401).json({ msg: "No puedes realizar esta acción." });
 
+    const existProductInList = await _QuotationHasProduct.findOne({
+      where: { quotation_id, shop_has_product_id },
+    });
+
+    if (!existProductInList) {
+      return res
+        .status(400)
+        .json({ msg: "Ese producto no se encuentra en la cotización." });
+    }
+
     const existItem = await _ShopHasProduct.findOne({
       where: { id: shop_has_product_id },
     });
+
     if (existItem) {
       await _QuotationHasProduct.destroy({
         where: {
